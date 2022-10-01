@@ -1,8 +1,6 @@
 <script lang="ts">
 	import ImageGrid from '$lib/ImageGrid.svelte';
 	import ImageSearchForm from '$lib/ImageSearchForm.svelte';
-	import Sensor from '$lib/Sensor.svelte';
-	import { selectedImageItem } from '$lib/stores';
 </script>
 
 <div class="flex flex-col grow space-y-4">

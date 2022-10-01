@@ -9,7 +9,6 @@
 
 	let audio: HTMLAudioElement;
 	let canvas: HTMLCanvasElement;
-	let canvasContainer: HTMLDivElement;
 	let context: CanvasRenderingContext2D | null;
 
 	function loadContext() {
@@ -99,7 +98,7 @@
 	});
 </script>
 
-<div bind:this={canvasContainer} class="flex flex-col grow space-y-4">
+<div class="flex flex-col grow space-y-4">
 	<canvas
 		bind:this={canvas}
 		on:touchstart={(e) => handleTouch(e)}
