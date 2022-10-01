@@ -6,7 +6,7 @@
 
 	let searchInput: HTMLInputElement;
 	let searchQuery: string;
-	let loading: boolean = false;
+	let loading = false;
 
 	async function handleSubmit() {
 		loading = true;
