@@ -35,7 +35,7 @@
 		"vite": "^3.1.0"
 	},
 	"type": "module",
-  "engines" : {
-    "node" : "^17.9.1"
-  }
+	"engines": {
+		"node": "^17.9.1"
+	}
 }

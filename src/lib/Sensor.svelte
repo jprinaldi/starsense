@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-
-	export let imageSrc: string;
+	import { selectedImageItem } from '$lib/stores';
+	import { CORS_PROXY_URL, SOUND_SRC } from '$lib/config';
 
 	const pixelIntensityThreshold = 32;
-	const CORS_PROXY = 'https://cors.deno.dev';
-	const SOUND_SRC = 'https://cdn.freesound.org/previews/153/153140_2364561-lq.ogg';
 
 	let audio: HTMLAudioElement;
 	let canvas: HTMLCanvasElement;
@@ -61,7 +59,7 @@
 		// that makes this work alongside the crossOrigin property on img.
 		// More info: https://stackoverflow.com/questions/22097747/how-to-fix-getimagedata-error-the-canvas-has-been-tainted-by-cross-origin-data
 		baseImage.crossOrigin = 'Anonymous';
-		baseImage.src = `${CORS_PROXY}/${imageSrc}`;
+		baseImage.src = `${CORS_PROXY_URL}/${imageSrc}`;
 		baseImage.onload = () => {
 			if (context) {
 				drawImageScaled(baseImage, context);
@@ -93,7 +91,8 @@
 	onMount(() => {
 		loadAudio();
 		loadContext();
-		createImage(imageSrc);
+		console.debug($selectedImageItem);
+		if ($selectedImageItem !== null) createImage($selectedImageItem.links[0].href);
 	});
 </script>
 
