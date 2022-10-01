@@ -1,18 +1,19 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { ImageItem } from '$lib/types';
 	import { selectedImageItem } from '$lib/stores';
 	import { imageItems } from '$lib/stores';
-	import { CORS_PROXY_URL } from '$lib/config';
 
 	function selectImage(imageItem: ImageItem) {
 		selectedImageItem.set(imageItem);
+		goto('/sense');
 	}
 </script>
 
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 	{#each $imageItems as imageItem}
 		<img
-			src={`${CORS_PROXY_URL}/${imageItem.links[0].href}`}
+			src={imageItem.links[0].href}
 			alt={imageItem.data[0].description}
 			title={imageItem.data[0].description}
 			on:click={() => selectImage(imageItem)}

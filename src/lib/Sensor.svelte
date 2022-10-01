@@ -2,11 +2,14 @@
 	import { onMount } from 'svelte';
 	import { selectedImageItem } from '$lib/stores';
 	import { CORS_PROXY_URL, SOUND_SRC } from '$lib/config';
+	import { getRandomInt } from '$lib/helpers';
+	import { mainContainerWidth, mainContainerHeight } from '$lib/stores';
 
 	const pixelIntensityThreshold = 32;
 
 	let audio: HTMLAudioElement;
 	let canvas: HTMLCanvasElement;
+	let canvasContainer: HTMLDivElement;
 	let context: CanvasRenderingContext2D | null;
 
 	function loadContext() {
@@ -59,7 +62,7 @@
 		// that makes this work alongside the crossOrigin property on img.
 		// More info: https://stackoverflow.com/questions/22097747/how-to-fix-getimagedata-error-the-canvas-has-been-tainted-by-cross-origin-data
 		baseImage.crossOrigin = 'Anonymous';
-		baseImage.src = `${CORS_PROXY_URL}/${imageSrc}`;
+		baseImage.src = `${CORS_PROXY_URL}/${imageSrc}?dummy=${getRandomInt(10000)}`;
 		baseImage.onload = () => {
 			if (context) {
 				drawImageScaled(baseImage, context);
@@ -96,12 +99,12 @@
 	});
 </script>
 
-<div class="flex flex-col space-y-4">
+<div bind:this={canvasContainer} class="flex flex-col grow space-y-4">
 	<canvas
 		bind:this={canvas}
 		on:touchstart={(e) => handleTouch(e)}
 		on:touchmove={(e) => handleTouch(e)}
-		width={window.innerWidth}
-		height={window.innerHeight}
+		width={$mainContainerWidth}
+		height={$mainContainerHeight}
 	/>
 </div>
