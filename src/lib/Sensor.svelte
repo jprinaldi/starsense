@@ -93,7 +93,6 @@
 	onMount(() => {
 		loadAudio();
 		loadContext();
-		console.debug($selectedImageItem);
 		if ($selectedImageItem !== null) createImage($selectedImageItem.links[0].href);
 	});
 </script>
