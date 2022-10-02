@@ -4,12 +4,15 @@
 	import { CORS_PROXY_URL, SOUND_SRC } from '$lib/config';
 	import { getRandomInt } from '$lib/helpers';
 
-	const pixelIntensityThreshold = 32;
+	const vibrationDelay = 100;
 
 	let audio: HTMLAudioElement;
 	let canvas: HTMLCanvasElement;
 	let context: CanvasRenderingContext2D | null;
 	let container: HTMLDivElement;
+	let currentPixelIntensity: number | null;
+	let vibrationInterval: number;
+	let currentPixelIntensityGroup: number | null;
 
 	function loadContext() {
 		context = canvas.getContext('2d', { willReadFrequently: true });
@@ -20,13 +23,37 @@
 		audio.load();
 	}
 
+	function getAudioVolume(pixelIntensity: number) {
+		const pixelIntensityGroup = getPixelIntensityGroup(pixelIntensity);
+		return pixelIntensityGroup / 8;
+	}
+
 	function playSound() {
 		if (audio === undefined) loadAudio();
+		if (currentPixelIntensity === null) return;
+		const volume = getAudioVolume(currentPixelIntensity);
+		audio.volume = volume;
 		audio.play();
 	}
 
-	function vibrate() {
-		window.navigator.vibrate(200);
+	function getVibrationDuration(pixelIntensity: number): number {
+		const duration = (Math.ceil(Math.log2(pixelIntensity + 1)) + 1) * 10;
+		return duration;
+	}
+
+	function startVibration(duration: number) {
+		navigator.vibrate(duration);
+	}
+
+	function startPersistentVibration(duration: number, interval: number) {
+		vibrationInterval = window.setInterval(() => {
+			startVibration(duration);
+		}, interval);
+	}
+
+	function stopVibration() {
+		if (vibrationInterval) window.clearInterval(vibrationInterval);
+		navigator.vibrate(0);
 	}
 
 	function getPixelIntensity(x: number, y: number): number {
@@ -37,20 +64,43 @@
 		return pixelIntensity;
 	}
 
-	function handleContactLocation(x: number, y: number) {
-		const pixelIntensity = getPixelIntensity(x, y);
-		if (pixelIntensity >= pixelIntensityThreshold) {
-			playSound();
-			vibrate();
-		}
-	}
-
-	function handleTouch(e: TouchEvent) {
+	function getTouchedPixel(e: TouchEvent): Array<number> {
 		const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
 		const x = e.targetTouches[0].pageX - rect.left;
 		const y = e.targetTouches[0].pageY - rect.top;
+		return [x, y];
+	}
 
-		handleContactLocation(x, y);
+	function getPixelIntensityGroup(pixelIntensity: number) {
+		return Math.ceil(Math.log2(pixelIntensity + 1));
+	}
+
+	function handleTouchStart(e: TouchEvent) {
+		const [x, y] = getTouchedPixel(e);
+		const pixelIntensity = getPixelIntensity(x, y);
+		currentPixelIntensity = pixelIntensity;
+		const vibrationDuration = getVibrationDuration(currentPixelIntensity);
+		startPersistentVibration(vibrationDuration, vibrationDelay);
+		playSound();
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		const [x, y] = getTouchedPixel(e);
+		const pixelIntensity = getPixelIntensity(x, y);
+		const pixelIntensityGroup = getPixelIntensityGroup(pixelIntensity);
+		if (pixelIntensityGroup !== currentPixelIntensityGroup) {
+			currentPixelIntensityGroup = pixelIntensityGroup;
+			const vibrationDuration = getVibrationDuration(pixelIntensity);
+			stopVibration();
+			startPersistentVibration(vibrationDuration, vibrationDelay);
+		}
+		playSound();
+		currentPixelIntensity = pixelIntensity;
+	}
+
+	function handleTouchEnd() {
+		stopVibration();
+		currentPixelIntensity = null;
 	}
 
 	function createImage(imageSrc: string) {
@@ -71,8 +121,9 @@
 
 	function createCanvas() {
 		canvas = document.createElement('canvas');
-		canvas.ontouchstart = (e) => handleTouch(e);
-		canvas.ontouchmove = (e) => handleTouch(e);
+		canvas.ontouchstart = (e) => handleTouchStart(e);
+		canvas.ontouchmove = (e) => handleTouchMove(e);
+		canvas.ontouchend = () => handleTouchEnd();
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 		canvas.classList.add('touch-none');
@@ -115,6 +166,6 @@
 
 <div bind:this={container} class="flex flex-col grow justify-center items-center">
 	{#if !experiencing}
-		<button class="btn" on:click={(e) => startExperience()}>Start</button>
+		<button class="btn" on:click={() => startExperience()}>Start</button>
 	{/if}
 </div>
