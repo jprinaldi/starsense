@@ -3,10 +3,13 @@
 	import { selectedImageHref } from '$lib/stores';
 	import { CORS_PROXY_URL, SOUND_SRC } from '$lib/config';
 	import { getRandomInt } from '$lib/helpers';
+	import { getSound, querySounds } from '$lib/api/freesound';
+	import type { SoundItem } from '$lib/types';
 
 	const vibrationDelay = 100;
 
 	let audio: HTMLAudioElement;
+	let backgroundAudio: HTMLAudioElement;
 	let canvas: HTMLCanvasElement;
 	let context: CanvasRenderingContext2D | null;
 	let container: HTMLDivElement;
@@ -18,8 +21,8 @@
 		context = canvas.getContext('2d', { willReadFrequently: true });
 	}
 
-	function loadAudio() {
-		audio = new Audio(SOUND_SRC);
+	function loadAudio(source: string) {
+		audio = new Audio(source);
 		audio.load();
 	}
 
@@ -29,7 +32,7 @@
 	}
 
 	function playSound() {
-		if (audio === undefined) loadAudio();
+		if (audio === undefined) loadAudio(SOUND_SRC);
 		if (currentPixelIntensity === null) return;
 		const volume = getAudioVolume(currentPixelIntensity);
 		audio.volume = volume;
@@ -152,15 +155,46 @@
 
 	let experiencing = false;
 
-	function startExperience() {
+	async function startExperience() {
 		experiencing = true;
 		createCanvas();
 		loadContext();
+		const soundURL = await getSoundscape('moon');
+		playSoundscape(soundURL);
 		if ($selectedImageHref !== null) createImage($selectedImageHref);
 	}
 
+	async function getSoundItems(query: string): Promise<Array<SoundItem>> {
+		const response = await querySounds(query);
+		const data = await response.json();
+		const soundList = data.results;
+		return soundList;
+	}
+
+	async function getSoundURL(soundID: string): Promise<string> {
+		const response = await getSound(soundID);
+		const data = await response.json();
+		const soundURL = data.previews['preview-hq-ogg'];
+		return soundURL;
+	}
+
+	async function getSoundscape(query: string): Promise<string> {
+		const soundItems = await getSoundItems(query);
+		const soundItem = soundItems[Math.floor(Math.random() * soundItems.length)];
+		const soundID = soundItem.id;
+		const soundURL = await getSoundURL(soundID);
+		return soundURL;
+	}
+
+	function playSoundscape(source: string) {
+		backgroundAudio = new Audio(source);
+		backgroundAudio.loop = true;
+		backgroundAudio.load();
+		backgroundAudio.play();
+	}
+
 	onMount(async () => {
-		loadAudio();
+		loadAudio(SOUND_SRC);
 	});
 </script>
 
