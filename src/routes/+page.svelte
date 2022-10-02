@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Starsense - Making the universe available at your fingertips</title>
+	<title>Starsense - The universe at your fingertips</title>
 </svelte:head>
 
 <div class="flex flex-col grow space-y-4">
