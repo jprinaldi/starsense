@@ -9,6 +9,7 @@
 	let audio: HTMLAudioElement;
 	let canvas: HTMLCanvasElement;
 	let context: CanvasRenderingContext2D | null;
+	let container: HTMLDivElement;
 
 	function loadContext() {
 		context = canvas.getContext('2d', { willReadFrequently: true });
@@ -68,13 +69,22 @@
 		};
 	}
 
+	function createCanvas() {
+		canvas = document.createElement('canvas');
+		canvas.ontouchstart = (e) => handleTouch(e);
+		canvas.ontouchmove = (e) => handleTouch(e);
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		canvas.classList.add('touch-none');
+		container.appendChild(canvas);
+	}
+
 	function drawImageScaled(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
-		var canvas = ctx.canvas;
-		var hRatio = canvas.width / img.width;
-		var vRatio = canvas.height / img.height;
-		var ratio = Math.min(hRatio, vRatio);
-		var centerShift_x = (canvas.width - img.width * ratio) / 2;
-		var centerShift_y = (canvas.height - img.height * ratio) / 2;
+		const hRatio = canvas.width / img.width;
+		const vRatio = canvas.height / img.height;
+		const ratio = Math.min(hRatio, vRatio);
+		const centerShiftX = (canvas.width - img.width * ratio) / 2;
+		const centerShiftY = (canvas.height - img.height * ratio) / 2;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.drawImage(
 			img,
@@ -82,32 +92,29 @@
 			0,
 			img.width,
 			img.height,
-			centerShift_x,
-			centerShift_y,
+			centerShiftX,
+			centerShiftY,
 			img.width * ratio,
 			img.height * ratio
 		);
 	}
 
-	onMount(async () => {
-		loadAudio();
+	let experiencing = false;
+
+	function startExperience() {
+		experiencing = true;
+		createCanvas();
 		loadContext();
 		if ($selectedImageHref !== null) createImage($selectedImageHref);
+	}
+
+	onMount(async () => {
+		loadAudio();
 	});
 </script>
 
-<div class="flex flex-col grow space-y-4">
-	<canvas
-		bind:this={canvas}
-		on:touchstart={(e) => handleTouch(e)}
-		on:touchmove={(e) => handleTouch(e)}
-		width={window.innerWidth}
-		height={window.innerHeight}
-	/>
+<div bind:this={container} class="flex flex-col grow justify-center items-center">
+	{#if !experiencing}
+		<button class="btn" on:click={(e) => startExperience()}>Start</button>
+	{/if}
 </div>
-
-<style lang="postcss">
-	canvas {
-		touch-action: none;
-	}
-</style>
