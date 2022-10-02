@@ -3,7 +3,6 @@
 	import { selectedImageHref } from '$lib/stores';
 	import { CORS_PROXY_URL, SOUND_SRC } from '$lib/config';
 	import { getRandomInt } from '$lib/helpers';
-	import { mainContainerWidth, mainContainerHeight } from '$lib/stores';
 
 	const pixelIntensityThreshold = 32;
 
