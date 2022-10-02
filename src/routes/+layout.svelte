@@ -13,7 +13,6 @@
 </script>
 
 <div class="flex flex-col h-screen">
-	<Navbar />
 	<main bind:this={mainElement} class="flex container mx-auto h-full">
 		<slot />
 	</main>

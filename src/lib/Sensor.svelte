@@ -102,7 +102,7 @@
 		bind:this={canvas}
 		on:touchstart={(e) => handleTouch(e)}
 		on:touchmove={(e) => handleTouch(e)}
-		width={$mainContainerWidth}
-		height={$mainContainerHeight}
+		width={window.innerWidth}
+		height={window.innerHeight}
 	/>
 </div>
