@@ -16,4 +16,5 @@ export interface ImageItemData {
 	date_created: string;
 	description: string;
 	title: string;
+	nasa_id: string;
 }

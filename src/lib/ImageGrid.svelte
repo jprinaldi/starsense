@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { ImageItem } from '$lib/types';
-	import { selectedImageItem } from '$lib/stores';
+	import { selectedImageHref } from '$lib/stores';
 	import { imageItems } from '$lib/stores';
 
 	function selectImage(imageItem: ImageItem) {
-		selectedImageItem.set(imageItem);
+		selectedImageHref.set(imageItem.links[0].href);
 		goto('/sense');
 	}
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { selectedImageItem } from '$lib/stores';
+	import { selectedImageHref } from '$lib/stores';
 	import { CORS_PROXY_URL, SOUND_SRC } from '$lib/config';
 	import { getRandomInt } from '$lib/helpers';
 	import { mainContainerWidth, mainContainerHeight } from '$lib/stores';
@@ -93,7 +93,7 @@
 	onMount(() => {
 		loadAudio();
 		loadContext();
-		if ($selectedImageItem !== null) createImage($selectedImageItem.links[0].href);
+		if ($selectedImageHref !== null) createImage($selectedImageHref);
 	});
 </script>
 
