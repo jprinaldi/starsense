@@ -5,8 +5,9 @@
 	import { imageItems } from '$lib/stores';
 
 	function selectImage(imageItem: ImageItem) {
-		selectedImageHref.set(imageItem.links[0].href);
-		goto('/sense');
+		selectedImageHref.set(null);
+		const id = imageItem.data[0].nasa_id;
+		goto(`/sense/${id}`);
 	}
 </script>
 
