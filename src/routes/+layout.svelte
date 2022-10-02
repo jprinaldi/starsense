@@ -16,9 +16,3 @@
 		<slot />
 	</main>
 </div>
-
-<style lang="postcss">
-	main {
-		touch-action: none;
-	}
-</style>

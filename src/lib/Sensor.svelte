@@ -89,7 +89,7 @@
 		);
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		loadAudio();
 		loadContext();
 		if ($selectedImageHref !== null) createImage($selectedImageHref);
@@ -105,3 +105,9 @@
 		height={window.innerHeight}
 	/>
 </div>
+
+<style lang="postcss">
+	canvas {
+		touch-action: none;
+	}
+</style>
