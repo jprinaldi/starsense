@@ -37,7 +37,7 @@
 				class="input input-bordered grow"
 				disabled={loading}
 			/>
-			<button class="btn btn-square" disabled={loading} class:loading>
+			<button class="btn btn-square" aria-label="Search" disabled={loading} class:loading>
 				{#if !loading}
 					<SearchIcon />
 				{/if}
